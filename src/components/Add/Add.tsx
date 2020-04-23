@@ -5,8 +5,7 @@ import "./Add.scss";
 
 const Add = () => {
   const onClick = () => {
-    console.log("working?");
-    AppStore.openNewPayment();
+    AppStore.openPaymentVisualizer("adding");
   };
 
   return <p onClick={onClick} className="Add icon-add-circle"></p>;
