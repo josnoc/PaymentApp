@@ -12,3 +12,12 @@ body {
     width: 100%;
   }
 }
+
+input,
+textarea {
+  display: block;
+}
+
+textarea {
+  resize: none;
+}
