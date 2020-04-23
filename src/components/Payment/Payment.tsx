@@ -1,14 +1,38 @@
-import React from "react";
+import React, { useState, useLayoutEffect } from "react";
 
 import PaymentView from "./Payment.view";
 import { IPayment } from "../../Types";
+import appStore, { initialState } from "../../store/app";
+import { Moment } from "moment";
 
-const Payment = (props: React.PropsWithChildren<IPayment>) => {
+interface IProps extends IPayment {
+  id: number;
+}
+
+const Payment = (props: React.PropsWithChildren<IProps>) => {
+  const [appState, setAppState] = useState(initialState);
+
+  useLayoutEffect(() => {
+    const subscription = appStore.subscribe(setAppState);
+    appStore.init();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  });
+
+  const onSettingsClicked = () => {
+    appStore.openContextMenu(props.id);
+  };
+
   return (
     <PaymentView
-      date={props.date}
-      description={props.description}
-      amount={props.amount}
+      id={props.id}
+      payment={props}
+      onSettingsClicked={onSettingsClicked}
+      isContextMenuOpened={
+        appState.isContextMenuOpened && appState.contextId === props.id
+      }
     />
   );
 };

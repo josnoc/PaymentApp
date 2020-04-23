@@ -1,12 +1,13 @@
 import React from "react";
 
 import "./PaymentVisualizer.scss";
-import { IPayment } from "../../Types";
+import { IPayment, visualizerOpenMode } from "../../Types";
 import { Moment } from "moment";
 
 interface IProps {
+  mode: visualizerOpenMode;
   date: Moment | null;
-  amount: string;
+  amount: string | number;
   description: string;
   isDateValid: boolean;
   isAmountValid: boolean;
@@ -71,7 +72,7 @@ const PaymentVisualizerView = (props: React.PropsWithChildren<IProps>) => {
           <label htmlFor="description">Description:</label>
         </div>
         <button type="button" onClick={onSubmit} className="submit">
-          Create
+          {props.mode === "adding" ? "Create" : "Edit"}
         </button>
       </form>
     </div>

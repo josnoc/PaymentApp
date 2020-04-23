@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import moment, { Moment } from "moment";
 
 import PaymentVisualizerView from "./PaymentVisualizer.view";
-import { IPayment } from "../../Types";
+import { IPayment, visualizerOpenMode } from "../../Types";
 import appStore from "../../store/app";
+import PaymentStore from "../../store/payments";
+
+interface IProps {
+  mode: visualizerOpenMode;
+  id?: number;
+}
 
 interface IState {
   date: Moment | null;
-  amount: string;
+  amount: string | number;
   description: string;
   isDateValid: boolean;
   isAmountValid: boolean;
@@ -21,8 +27,17 @@ const defaultState: IState = {
   isAmountValid: true,
 };
 
-const PaymentVisualizer = () => {
-  const [formState, setFormState] = useState(defaultState);
+const PaymentVisualizer = (props: React.PropsWithChildren<IProps>) => {
+  const getInitialState = () => {
+    if (props.mode === "editing" && props.id)
+      return {
+        ...defaultState,
+        ...PaymentStore.getPayment(props.id),
+      } as IState;
+    return defaultState;
+  };
+
+  const [formState, setFormState] = useState(getInitialState());
 
   const onDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = moment(event.target.value);
@@ -52,14 +67,15 @@ const PaymentVisualizer = () => {
   };
 
   const onSubmit = (payment: IPayment) => {
-    console.log("submitted?");
     if (dateIsValid(payment.date) && amountIsValid(payment.amount)) {
+      if (props.mode === "adding") PaymentStore.addPayment(payment);
+      else PaymentStore.editPayment(props.id!, payment);
+      appStore.closePaymentVisualizer();
     }
   };
 
   const onOutsideClick = () => {
-    console.log("clicked?");
-    appStore.closeNewPayment();
+    appStore.closePaymentVisualizer();
   };
 
   const dateIsValid = (newDate: Moment) => {
@@ -83,6 +99,7 @@ const PaymentVisualizer = () => {
 
   return (
     <PaymentVisualizerView
+      mode={props.mode}
       date={formState.date}
       amount={formState.amount}
       description={formState.description}

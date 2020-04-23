@@ -4,25 +4,26 @@ import PaymentListView from "./PaymentList.view";
 import Payment from "../Payment/Payment";
 import { IPayment } from "../../Types";
 import moment from "moment";
+import PaymentStore, { initialState } from "../../store/payments";
 
 const PaymentList = () => {
-  const [payments, setPayments] = React.useState([
-    {
-      date: moment("2020-08-20"),
-      description: "Esse pariatur elit eu commodo in nulla nisi occa...",
-      amount: 245,
-    },
-    {
-      date: moment("2020-08-20"),
-      description: "Esse pariatur elit eu commodo in nulla nisi occa...",
-      amount: 750,
-    },
-  ] as IPayment[]);
+  const [payments, setPayments] = React.useState(initialState);
+
+  React.useLayoutEffect(() => {
+    const subscription = PaymentStore.subscribe(setPayments);
+    PaymentStore.init();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  });
+
   const renderPayments = () => {
     if (payments.length)
       return payments.map((payment, index) => {
         return (
           <Payment
+            id={index}
             key={index}
             date={payment.date}
             description={payment.description}

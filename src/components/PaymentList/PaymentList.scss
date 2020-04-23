@@ -1,9 +1,10 @@
 .Payment_List {
-  max-height: 100%;
+  height: calc(100% - 4rem);
   padding: 0 18px;
+  overflow-y: scroll;
 
   &.empty {
-    height: 100%;
+    height: calc(100% - 4rem);
 
     display: grid;
     justify-items: center;
