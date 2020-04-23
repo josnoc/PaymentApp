@@ -1,0 +1,15 @@
+@import "../../settings.scss";
+
+.Total {
+  background-color: $primary;
+  height: 4rem;
+  padding: 0 18px;
+  display: grid;
+  justify-content: right;
+  align-content: center;
+
+  .amount {
+    color: white;
+    padding-left: 10px;
+  }
+}
