@@ -16,7 +16,9 @@ interface IState {
   amount: string | number;
   description: string;
   isDateValid: boolean;
+  dateError: string;
   isAmountValid: boolean;
+  amountError: string;
 }
 
 const defaultState: IState = {
@@ -24,15 +26,17 @@ const defaultState: IState = {
   amount: "",
   description: "",
   isDateValid: true,
+  dateError: "",
   isAmountValid: true,
+  amountError: "",
 };
 
 const PaymentVisualizer = (props: React.PropsWithChildren<IProps>) => {
   const getInitialState = () => {
-    if (props.mode === "editing" && props.id)
+    if (props.mode === "editing")
       return {
         ...defaultState,
-        ...PaymentStore.getPayment(props.id),
+        ...PaymentStore.getPayment(props.id!),
       } as IState;
     return defaultState;
   };
@@ -42,7 +46,7 @@ const PaymentVisualizer = (props: React.PropsWithChildren<IProps>) => {
   const onDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = moment(event.target.value);
 
-    dateIsValid(newDate);
+    dateIsValid(event.target.value ? newDate : undefined);
   };
 
   const onAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,20 +82,59 @@ const PaymentVisualizer = (props: React.PropsWithChildren<IProps>) => {
     appStore.closePaymentVisualizer();
   };
 
-  const dateIsValid = (newDate: Moment) => {
+  const dateIsValid = (newDate: Moment | undefined) => {
     const today = moment();
 
-    if (newDate && newDate.isSameOrAfter(today.subtract(8, "days"))) {
-      setFormState((prev) => ({ ...prev, isDateValid: true, date: newDate }));
-      return true;
-    } else
-      setFormState((prev) => ({ ...prev, isDateValid: false, date: null }));
-    return false;
+    if (!newDate) {
+      setFormState((prev) => ({
+        ...prev,
+        isDateValid: false,
+        date: null,
+        dateError: "Date is required",
+      }));
+      return false;
+    }
+
+    if (newDate.isBefore(today.subtract(8, "days"))) {
+      setFormState((prev) => ({
+        ...prev,
+        isDateValid: false,
+        date: null,
+        dateError: "Date cannot be more than 7 days ago",
+      }));
+      return false;
+    }
+
+    setFormState((prev) => ({ ...prev, isDateValid: true, date: newDate }));
+    return true;
   };
 
   const amountIsValid = (newAmount: number) => {
-    if (isNaN(newAmount) || newAmount === 0) {
-      setFormState((prev) => ({ ...prev, isAmountValid: false, amount: "" }));
+    if (isNaN(newAmount)) {
+      setFormState((prev) => ({
+        ...prev,
+        isAmountValid: false,
+        amount: "",
+        amountError: "Amount can only contain numbers.",
+      }));
+      return false;
+    }
+    if (newAmount < 0) {
+      setFormState((prev) => ({
+        ...prev,
+        isAmountValid: false,
+        amount: "",
+        amountError: "Only positive values are valid",
+      }));
+      return false;
+    }
+    if (newAmount === 0) {
+      setFormState((prev) => ({
+        ...prev,
+        isAmountValid: false,
+        amount: "",
+        amountError: "Amount is required",
+      }));
       return false;
     }
     return true;
@@ -110,6 +153,8 @@ const PaymentVisualizer = (props: React.PropsWithChildren<IProps>) => {
       onOutsideClick={onOutsideClick}
       isDateValid={formState.isDateValid}
       isAmountValid={formState.isAmountValid}
+      amountError={formState.amountError}
+      dateError={formState.dateError}
       onSubmit={onSubmit}
     />
   );

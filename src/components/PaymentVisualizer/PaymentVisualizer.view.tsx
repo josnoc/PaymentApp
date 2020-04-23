@@ -11,6 +11,8 @@ interface IProps {
   description: string;
   isDateValid: boolean;
   isAmountValid: boolean;
+  amountError: string;
+  dateError: string;
   onDateChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onAmountChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onAmountBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -38,6 +40,7 @@ const PaymentVisualizerView = (props: React.PropsWithChildren<IProps>) => {
           <label htmlFor="date" className="icon icon-calendar-sharp" />
           <input
             onChange={props.onDateChange}
+            onBlur={props.onDateChange}
             id="date"
             className="input date"
             type="date"
@@ -46,6 +49,9 @@ const PaymentVisualizerView = (props: React.PropsWithChildren<IProps>) => {
           />
           <label htmlFor="date">Date:</label>
         </div>
+        {!props.isDateValid && (
+          <p className="error-message">{props.dateError}</p>
+        )}
         <div
           className={`input_container ${!props.isAmountValid ? "invalid" : ""}`}
         >
@@ -60,6 +66,9 @@ const PaymentVisualizerView = (props: React.PropsWithChildren<IProps>) => {
           />
           <label htmlFor="amount">Amount:</label>
         </div>
+        {!props.isAmountValid && (
+          <p className="error-message">{props.amountError}</p>
+        )}
         <div className="input_container">
           <textarea
             id="description"
