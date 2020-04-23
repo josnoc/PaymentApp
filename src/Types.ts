@@ -5,3 +5,9 @@ export interface IPayment {
   description: string;
   amount: number;
 }
+
+export interface IAppState {
+  isNewPaymentOpened: boolean;
+}
+
+export type setAppState = (state: IAppState) => void;
