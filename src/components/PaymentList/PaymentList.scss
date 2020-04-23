@@ -1,0 +1,15 @@
+.Payment_List {
+  max-height: 100%;
+
+  &.empty {
+    height: 100%;
+
+    display: grid;
+    justify-items: center;
+    align-content: center;
+  }
+
+  .Payment {
+    padding: 3px 0px;
+  }
+}
