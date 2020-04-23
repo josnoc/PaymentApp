@@ -1,0 +1,18 @@
+@import "../../settings.scss";
+
+.Add {
+  position: absolute;
+  bottom: 25px;
+  right: 18px;
+  font-size: 61px;
+  color: $accent;
+
+  &::before {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 100%;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
